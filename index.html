@@ -29,8 +29,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-
-// 🔥 Firebase Config (صحيح عندك)
 const firebaseConfig = {
   apiKey: "AIzaSyCIXG7iliJO7r6D5yrp15vZqUSU_mECmxM",
   authDomain: "nader1-70220.firebaseapp.com",
@@ -46,7 +44,6 @@ const db = getFirestore(app);
 
 let userName = "";
 
-// 👇 زر الدخول
 window.enterApp = async function () {
 
   const name = document.getElementById("name").value;
@@ -66,7 +63,6 @@ window.enterApp = async function () {
   }
 };
 
-// 👀 متابعة تسجيل الدخول
 onAuthStateChanged(auth, async (user) => {
 
   if (user && userName) {
