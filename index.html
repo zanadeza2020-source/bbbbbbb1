@@ -18,8 +18,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import { 
   getAuth,
-  signInAnonymously,
-  onAuthStateChanged
+  signInAnonymously
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
 import {
@@ -29,6 +28,8 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
+
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCIXG7iliJO7r6D5yrp15vZqUSU_mECmxM",
   authDomain: "nader1-70220.firebaseapp.com",
@@ -44,6 +45,7 @@ const db = getFirestore(app);
 
 let userName = "";
 
+// 🚀 دخول سريع جدًا
 window.enterApp = async function () {
 
   const name = document.getElementById("name").value;
@@ -55,31 +57,35 @@ window.enterApp = async function () {
 
   userName = name;
 
+  // ⚡ عرض فوري (بدون انتظار)
+  document.body.innerHTML = `
+    <h2>مرحباً ${name} 👋</h2>
+    <p>جاري تسجيل الدخول...</p>
+  `;
+
   try {
-    await signInAnonymously(auth);
-    document.getElementById("status").innerText = "جاري الدخول...";
-  } catch (error) {
-    document.getElementById("status").innerText = error.message;
-  }
-};
 
-onAuthStateChanged(auth, async (user) => {
+    const userCredential = await signInAnonymously(auth);
 
-  if (user && userName) {
-
-    await setDoc(doc(db, "users", user.uid), {
-      name: userName,
-      uid: user.uid,
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      name: name,
+      uid: userCredential.user.uid,
       loginTime: serverTimestamp()
     });
 
     document.body.innerHTML = `
-      <h1>مرحباً ${userName} 👋</h1>
-      <p>تم تسجيل الدخول بنجاح</p>
-      <p>UID: ${user.uid}</p>
+      <h2>مرحباً ${name} 👋</h2>
+      <p>تم تسجيل الدخول بنجاح ⚡</p>
+      <p>UID: ${userCredential.user.uid}</p>
+    `;
+
+  } catch (error) {
+    document.body.innerHTML = `
+      <h2>حدث خطأ ❌</h2>
+      <p>${error.message}</p>
     `;
   }
-});
+};
 
 </script>
 
