@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PWA Login</title>
+</head>
+<body>
+
+<h2>دخول التطبيق</h2>
+
+<input type="text" id="name" placeholder="اكتب اسمك">
+<button onclick="enterApp()">دخول</button>
+
+<p id="status"></p>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { 
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+
+// 🔥 Firebase Config (صحيح عندك)
+const firebaseConfig = {
+  apiKey: "AIzaSyCIXG7iliJO7r6D5yrp15vZqUSU_mECmxM",
+  authDomain: "nader1-70220.firebaseapp.com",
+  projectId: "nader1-70220",
+  storageBucket: "nader1-70220.appspot.com",
+  messagingSenderId: "67217107415",
+  appId: "1:67217107415:web:c09a81ddcdeb33dfe58392"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let userName = "";
+
+// 👇 زر الدخول
+window.enterApp = async function () {
+
+  const name = document.getElementById("name").value;
+
+  if (!name) {
+    document.getElementById("status").innerText = "اكتب اسمك";
+    return;
+  }
+
+  userName = name;
+
+  try {
+    await signInAnonymously(auth);
+    document.getElementById("status").innerText = "جاري الدخول...";
+  } catch (error) {
+    document.getElementById("status").innerText = error.message;
+  }
+};
+
+// 👀 متابعة تسجيل الدخول
+onAuthStateChanged(auth, async (user) => {
+
+  if (user && userName) {
+
+    await setDoc(doc(db, "users", user.uid), {
+      name: userName,
+      uid: user.uid,
+      loginTime: serverTimestamp()
+    });
+
+    document.body.innerHTML = `
+      <h1>مرحباً ${userName} 👋</h1>
+      <p>تم تسجيل الدخول بنجاح</p>
+      <p>UID: ${user.uid}</p>
+    `;
+  }
+});
+
+</script>
+
+</body>
+</html>
