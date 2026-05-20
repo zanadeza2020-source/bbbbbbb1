@@ -16,22 +16,16 @@
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { 
-  getAuth,
-  signInAnonymously
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getAuth, signInAnonymously } 
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 
-// 🔥 Firebase Config
+// 🔥 Firebase Config (تأكد أنه نفس مشروعك)
 const firebaseConfig = {
-  apiKey: "AIzaSyCIXG7iliJO7r6D5yrp15vZqUSU_mECmxM",
+  apiKey: "AIzaSyCIXG7iliJO7r6D5yrp15vZQUSU_mECmxM",
   authDomain: "nader1-70220.firebaseapp.com",
   projectId: "nader1-70220",
   storageBucket: "nader1-70220.appspot.com",
@@ -43,9 +37,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let userName = "";
-
-// 🚀 دخول سريع جدًا
+// 🚀 تسجيل الدخول
 window.enterApp = async function () {
 
   const name = document.getElementById("name").value;
@@ -55,33 +47,34 @@ window.enterApp = async function () {
     return;
   }
 
-  userName = name;
-
-  // ⚡ عرض فوري (بدون انتظار)
-  document.body.innerHTML = `
-    <h2>مرحباً ${name} 👋</h2>
-    <p>جاري تسجيل الدخول...</p>
-  `;
+  document.body.innerHTML = `<h3>جاري تسجيل الدخول...</h3>`;
 
   try {
 
+    // 🔐 تسجيل Anonymous
     const userCredential = await signInAnonymously(auth);
 
-    await setDoc(doc(db, "users", userCredential.user.uid), {
+    const uid = userCredential.user.uid;
+
+    // 💾 حفظ في Firestore
+    await setDoc(doc(db, "users", uid), {
       name: name,
-      uid: userCredential.user.uid,
+      uid: uid,
       loginTime: serverTimestamp()
     });
 
+    // 🎉 نجاح
     document.body.innerHTML = `
-      <h2>مرحباً ${name} 👋</h2>
-      <p>تم تسجيل الدخول بنجاح ⚡</p>
-      <p>UID: ${userCredential.user.uid}</p>
+      <h1>مرحباً ${name} 👋</h1>
+      <p>تم تسجيل الدخول بنجاح</p>
+      <p>UID: ${uid}</p>
     `;
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     document.body.innerHTML = `
-      <h2>حدث خطأ ❌</h2>
+      <h2>خطأ ❌</h2>
       <p>${error.message}</p>
     `;
   }
